@@ -1,3 +1,4 @@
+import os
 
 routes = ["/muse/eeg", "/muse/eeg/quantization","/muse/elements/alpha_relative",
           "/muse/elements/beta_relative","/muse/elements/delta_relative",
@@ -29,14 +30,47 @@ class printModuleTest:
     def __init__(self):
         pass
 
-    def printLOL(self,unused_addr,*args):
-        for x in range(1, len(args)):
-            print(args[x])
+    def printLOL(self,osc_path,*args):
+        print(str(args).replace("(","").replace(")",""))
+        print (osc_path)
+
 
     def mapAllForPrint(self,dispatcher,function=printLOL):
-        dispatcher.mapSameFunctionToPaths(function,routes)
+        dispatcher.mapSameFunctionToPaths(function,routes,True)
 
     def configure(self, dispatcher):
         self.mapAllForPrint(dispatcher)
 
-    #TODO: Fer funcio que canvii 0 a 1 i k es guardi al fitxer de sessio com a event
+    ##TODO: Fer funcio que canvii 0 a 1 i k es guardi al fitxer de sessio com a event
+
+class ExperimentalModule:
+
+    def __init__(self,filename,userEventName):
+        self.fd = open(filename + ".txt", "w+") # ERROR HANDLING AND OS USAGE
+        self.event = 0
+        self.userEventName = userEventName
+
+    def changeEventState(self):
+        if self.event:
+            self.event = 0
+        else:
+            self.event = 1
+        return self.event
+
+    def saveResults(self,osc_path,*args):
+
+        expModule = args[0][0][0]
+        values = args[1]
+        for x in range(2, len(args)):
+            values = values + "," + str(args[x])
+
+        expModule.fd.write(osc_path+":"+values+";"+ str(expModule.userEventName) +": "+ str(expModule.event) + '\n')
+        print(osc_path+":"+values+";"+ str(expModule.userEventName) +": "+ str(expModule.event) + '\n')
+
+
+    def mapAllToFile(self,dispatcher,function=saveResults):
+        dispatcher.mapSameFunctionToPaths(function,routes,True,self)
+
+
+    def configure(self, dispatcher):
+        self.mapAllToFile(dispatcher)

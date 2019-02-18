@@ -4,7 +4,7 @@ from tkinter import *
 from tkinter import messagebox
 
 
-def functionBindingtoWidget(controler):
+def functionBindingtoWidget(controler,module):
     root = Tk()
 
     def on_closing():
@@ -25,4 +25,6 @@ def functionBindingtoWidget(controler):
     button1.pack()
     button2 = Button(root, text="StopDispatcher",bg="red", command=on_stop)
     button2.pack()
+    button3 = Button(root, text=module.userEventName, bg="red", command=module.changeEventState)
+    button3.pack()
     root.mainloop()

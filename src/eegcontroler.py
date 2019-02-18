@@ -43,13 +43,13 @@ class ModularDispatcher:
         return self.configured
 
 
-    def mapPath(self, path, function):
-        self.dispatcher.map(path, function)
+    def mapPath(self, path, function,needs_reply_address=False,*args):
+        self.dispatcher.map(path,function,args,needs_reply_address)
 
 
-    def mapSameFunctionToPaths(self, function,paths):
+    def mapSameFunctionToPaths(self, function,paths,needs_reply_address=False,*args):
         for path in paths:
-            self.dispatcher.map(path, function)
+            self.dispatcher.map(path, function,args,needs_reply_address=needs_reply_address)
 
     def configure(self):
         self.module.configure(self)
