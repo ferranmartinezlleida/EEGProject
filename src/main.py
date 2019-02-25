@@ -22,20 +22,16 @@ def print_volume_handler(unused_addr,*args):
 
 if __name__ == "__main__":
     # TODO: Multiprocessing per cridar al script
-    # TODO: Modul Experimental[X] (En Brut)
-        # TODO: Printar ruta [X]
-        # TODO: Guardar valors a un fitxer [X]
-        # TODO: Fer funcio que canvii 0 a 1 i k es guardi al fitxer de sessio com a event [X]
 
     # TODO: Modul Mouse
     # TODO: Multidioma Arxiu clau-valor
     # TODO: Fer funcio que canvii 0 a 1 i k es guardi al fitxer de sessio com a event
     # https://www.youtube.com/watch?v=BRagbwst5I4
 
-    module = ExperimentalModule("experimentResults","Event")
-    dispatcher = ModularDispatcher(module)
+    #module = ExperimentalModule("experimentResults","Event")
+    #dispatcher = ModularDispatcher(module)
+    #controler = OSCcontroler(dispatcher)
+    #controler.buildServer()
+    #functionBindingtoWidget(controler,module)
 
-    controler = OSCcontroler(dispatcher)
-    controler.buildServer()
-
-    functionBindingtoWidget(controler,module)
+    selectModuleMenu()

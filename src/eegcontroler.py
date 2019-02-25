@@ -54,3 +54,4 @@ class ModularDispatcher:
     def configure(self):
         self.module.configure(self)
         self.configured = True
+

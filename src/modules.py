@@ -1,4 +1,5 @@
 import os
+from tkinter import *
 
 routes = ["/muse/eeg", "/muse/eeg/quantization","/muse/elements/alpha_relative",
           "/muse/elements/beta_relative","/muse/elements/delta_relative",
@@ -12,6 +13,8 @@ routes = ["/muse/eeg", "/muse/eeg/quantization","/muse/elements/alpha_relative",
           "/muse/elements/delta_session_score","/muse/elements/gamma_session_score",
           "/muse/elements/theta_session_score","/muse/acc","/muse/drlref",
           "/muse/batt","/muse/elements/blink","/muse/elements/jaw_clench","/muse/elements/touching_forehead"]
+
+modules = ["printModule","printModuleTest","ExperimentalModule",]
 
 class printModule:
 
@@ -41,14 +44,13 @@ class printModuleTest:
     def configure(self, dispatcher):
         self.mapAllForPrint(dispatcher)
 
-    ##TODO: Fer funcio que canvii 0 a 1 i k es guardi al fitxer de sessio com a event
-
 class ExperimentalModule:
 
-    def __init__(self,filename,userEventName):
+    def __init__(self,userRoutes,filename,userEventName="Event"):
         self.fd = open(filename + ".txt", "w+") # ERROR HANDLING AND OS USAGE
         self.event = 0
         self.userEventName = userEventName
+        self.routes = userRoutes
 
     def changeEventState(self):
         if self.event:
@@ -58,19 +60,21 @@ class ExperimentalModule:
         return self.event
 
     def saveResults(self,osc_path,*args):
+        import datetime
 
         expModule = args[0][0][0]
-        values = args[1]
+        values = str(args[1])
         for x in range(2, len(args)):
             values = values + "," + str(args[x])
-
-        expModule.fd.write(osc_path+":"+values+";"+ str(expModule.userEventName) +": "+ str(expModule.event) + '\n')
-        print(osc_path+":"+values+";"+ str(expModule.userEventName) +": "+ str(expModule.event) + '\n')
+        time = datetime.datetime.utcnow()
+        expModule.fd.write('['+str(time)+']'+osc_path+":"+values+";"+ str(expModule.userEventName) +": "+ str(expModule.event) + '\n')
+        print('['+str(time)+']'+osc_path+":"+values+";"+ str(expModule.userEventName) +": "+ str(expModule.event) + '\n')
 
 
     def mapAllToFile(self,dispatcher,function=saveResults):
-        dispatcher.mapSameFunctionToPaths(function,routes,True,self)
+        dispatcher.mapSameFunctionToPaths(function,self.routes,True,self)
 
 
     def configure(self, dispatcher):
         self.mapAllToFile(dispatcher)
+
