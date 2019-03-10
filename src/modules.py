@@ -47,7 +47,7 @@ class printModuleTest:
 class ExperimentalModule:
 
     def __init__(self,userRoutes,filename,userEventName="Event"):
-        self.fd = open(filename + ".txt", "w+") # ERROR HANDLING AND OS USAGE
+        self.fd = open("../signals_files/" + filename + ".txt", "a+") # ERROR HANDLING AND OS USAGE
         self.event = 0
         self.userEventName = userEventName
         self.routes = userRoutes
@@ -77,4 +77,52 @@ class ExperimentalModule:
 
     def configure(self, dispatcher):
         self.mapAllToFile(dispatcher)
+
+class MouseModule:
+
+    def __init__(self):
+        import pyautogui
+        self.userEventName = "OnlytoFunction"
+        self.event = 0
+        self.counter = 0
+        self.size = pyautogui.size()
+
+    def changeEventState(self):
+        if self.event:
+            self.event = 0
+        else:
+            self.event = 1
+        return self.event
+
+    def move(self,unused_addr,*args): #Thread millor opcio - Trobar un smooth movement i velocitat - Deadzone(Sobretot)
+        import pyautogui
+
+        pyautogui.MINIMUM_DURATION = 0  # Default: 0.1
+        pyautogui.PAUSE = 0
+        mouseModule = args[0][0][0]
+
+        def calculatex(x):
+            return ((x)-(-51))*3.21
+        try:
+            print(args[1])
+            print()
+            if mouseModule.counter == 36:
+
+                if args[1] < -50:
+                    pyautogui.moveTo(None,0, duration=0.2)
+                elif args[1] > 230:
+                    pyautogui.moveTo(None,mouseModule.size[1]-1, duration=0.2)
+                else:
+                    pyautogui.moveTo(None,calculatex(args[1]), duration=0.2)
+                mouseModule.counter = 0
+
+            mouseModule.counter +=1
+
+        except KeyboardInterrupt:
+            print("Stop\n")
+
+    def configure(self, dispatcher):
+        dispatcher.mapPath("/muse/acc", self.move,False,self)
+
+
 

@@ -21,17 +21,19 @@ def print_volume_handler(unused_addr,*args):
 
 
 if __name__ == "__main__":
+    import pyautogui
     # TODO: Multiprocessing per cridar al script
-
     # TODO: Modul Mouse
     # TODO: Multidioma Arxiu clau-valor
-    # TODO: Fer funcio que canvii 0 a 1 i k es guardi al fitxer de sessio com a event
-    # https://www.youtube.com/watch?v=BRagbwst5I4
+    # TODO: Solucionar tema dels checkboxs (Seleccionar tots)
+    # TODO: Fer un disseny millor dels Checkboxs
+    # TODO: Millorar la pantalla del Dispatcher
 
-    #module = ExperimentalModule("experimentResults","Event")
-    #dispatcher = ModularDispatcher(module)
-    #controler = OSCcontroler(dispatcher)
-    #controler.buildServer()
-    #functionBindingtoWidget(controler,module)
+    #selectModuleMenu()
 
-    selectModuleMenu()
+    module = MouseModule()
+    dispatcher = ModularDispatcher(module)
+    controler = OSCcontroler(dispatcher)
+    controler.buildServer()
+    functionBindingtoWidget(controler,module)
+

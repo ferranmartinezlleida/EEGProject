@@ -43,7 +43,7 @@ def functionBindingtoWidget(controler,module):
 
 
 
-def redirectToModuleWindow(selected):
+def factoryModuleGui(selected):
     if selected == 1:
         module = printModule()
         dispatcher = ModularDispatcher(module)
@@ -87,7 +87,7 @@ def selectModuleMenu():
 
     def clicked():
         root.destroy()
-        redirectToModuleWindow(selected.get())
+        factoryModuleGui(selected.get())
 
 
     btn = Button(root, text="Confirma", command=clicked)
@@ -100,7 +100,6 @@ class ModularGui:
     def __init__(self,moduleGUI):
         self.module = moduleGUI
         self.root = Tk()
-        self.attached = False
 
     def setModuleConfigurationTools(self):
         self.root.title("Configuració")
@@ -111,9 +110,6 @@ class ModularGui:
         config.grid(column=1, row=0)
         self.module.attachConfigurationWidgets(self.root)
 
-    def isAttached(self):
-        return self.attached
-
     def startDisplay(self):
         self.root.mainloop()
 
@@ -123,7 +119,7 @@ class ModularGui:
         controler = OSCcontroler(dispatcher)
         controler.buildServer()
         self.root.destroy()
-        functionBindingtoWidget(controler,configuredModule)
+        functionBindingtoWidget(controler,configuredModule) #Provisional
 
 
 
@@ -148,7 +144,7 @@ class ExperimentalGui:
 
         def selectAll():
             for checkBox in routeBoxes:
-                checkBox.toggle()
+                    checkBox.toggle()
 
         var = StringVar()
         c = Checkbutton(root, text="Selecciona tots", variable=var, command=selectAll)
