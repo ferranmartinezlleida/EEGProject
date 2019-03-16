@@ -81,13 +81,13 @@ class ExperimentalModule:
 class MouseModule:
 
     def __init__(self):
-        import pyautogui
+        self.x = 0
+        self.y = 0
         self.userEventName = "GetReference"
         self.event = 0
         self.counter = 0
         self.referenced = 0
-        self.x = 0
-        self.y = 0
+        self.ignore = 0
 
     def changeEventState(self):
         if self.event:
@@ -97,46 +97,43 @@ class MouseModule:
         self.counter = 0
         return self.event
 
-    def move(self,unused_addr,*args): #Thread millor opcio - Trobar un smooth movement i velocitat - Deadzone(Sobretot)
+    def calculatey(self,y):
+        if y < self.y - 40:
+            return -10
+        elif y > self.y + 40:
+            return 10
+        else:
+            return 0
+
+    def calculatex(self,x):
+        if x < self.x - 40:
+            return 10
+        elif x > self.x + 40:
+            return -10
+        else:
+            return 0
+
+
+    def calculateStop(self,x, y):
+        if 40 + self.y >= y and self.y - 40 <= y and 40 + self.x >= x and self.x - 40 <= x:
+            return True
+        else:
+            return False
+
+    def move(self,unused_addr,*args):
         import pyautogui
         pyautogui.FAILSAFE = False
         pyautogui.PAUSE = 0
         mouseModule = args[0][0][0]
 
-        def calculatey(y):
-            if y < mouseModule.y - 60:
-                return -10
-            elif y > mouseModule.y + 60:
-                return 10
-            else:
-                return 0
-
-        def calculatex(x):
-            if x < mouseModule.x - 25:
-                return 10
-            elif x > mouseModule.x + 25:
-                return -10
-            else:
-                return 0
-
-        def calculateStop(x,y):
-            if 60 + mouseModule.y >= y and mouseModule.y -60 <= y and 25 + mouseModule.x >= x and mouseModule.x - 25 <= x:
-                return True
-            else:
-                return False
         if mouseModule.event:
             if mouseModule.referenced:
-
                 try:
-                    if mouseModule.counter == 15:
-                        print("X:")
-                        print(args[3])
-                        print("Y:")
-                        print(args[1])
-                        if calculateStop(args[3],args[1]):
+                    if mouseModule.counter == 10:
+                        if mouseModule.calculateStop(args[3],args[1]):
                             pass
                         else:
-                            pyautogui.moveRel(calculatex(args[3]),calculatey(args[1]), duration=0.1)
+                            pyautogui.moveRel(mouseModule.calculatex(args[3]),mouseModule.calculatey(args[1]), duration=0.1)
                         mouseModule.counter = 0
 
                     mouseModule.counter +=1
@@ -144,20 +141,36 @@ class MouseModule:
                 except KeyboardInterrupt:
                     print("Stop\n")
             else:
-                print("RefY:")
-                print(args[1])
-                print("RefX:")
-                print(args[3])
                 mouseModule.x,mouseModule.y = args[3],args[1]
                 mouseModule.referenced = 1
         else:
-            if mouseModule.counter == 40:
+            if mouseModule.counter == 30:
                 print("RefY:" + str(args[1]))
                 print("RefX:" + str(args[3]))
                 mouseModule.counter = 0
             mouseModule.counter+=1
 
+    def click(self, unused_addr, *args):
+        import pyautogui
+        mouseModule = args[0][0][0]
+
+        print(args[1])
+        if mouseModule.referenced:
+
+            if mouseModule.ignore == 0 or mouseModule.ignore >= 5:
+                if args[1] and mouseModule.ignore == 0:
+                    pyautogui.click()
+                    mouseModule.ignore += 1
+                elif args[1] and 10 >= mouseModule.ignore >= 5:
+                    pyautogui.doubleClick()
+                else:
+                    mouseModule.ignore = 0
+            else:
+                mouseModule.ignore+=1
+
+
     def configure(self, dispatcher):
+        dispatcher.mapPath("/muse/elements/jaw_clench",self.click,False,self)
         dispatcher.mapPath("/muse/acc", self.move,False,self)
 
 
