@@ -82,44 +82,80 @@ class MouseModule:
 
     def __init__(self):
         import pyautogui
-        self.userEventName = "OnlytoFunction"
+        self.userEventName = "GetReference"
         self.event = 0
         self.counter = 0
-        self.size = pyautogui.size()
+        self.referenced = 0
+        self.x = 0
+        self.y = 0
 
     def changeEventState(self):
         if self.event:
             self.event = 0
         else:
             self.event = 1
+        self.counter = 0
         return self.event
 
     def move(self,unused_addr,*args): #Thread millor opcio - Trobar un smooth movement i velocitat - Deadzone(Sobretot)
         import pyautogui
-
-        pyautogui.MINIMUM_DURATION = 0  # Default: 0.1
+        pyautogui.FAILSAFE = False
         pyautogui.PAUSE = 0
         mouseModule = args[0][0][0]
 
+        def calculatey(y):
+            if y < mouseModule.y - 60:
+                return -10
+            elif y > mouseModule.y + 60:
+                return 10
+            else:
+                return 0
+
         def calculatex(x):
-            return ((x)-(-51))*3.21
-        try:
-            print(args[1])
-            print()
-            if mouseModule.counter == 36:
+            if x < mouseModule.x - 25:
+                return 10
+            elif x > mouseModule.x + 25:
+                return -10
+            else:
+                return 0
 
-                if args[1] < -50:
-                    pyautogui.moveTo(None,0, duration=0.2)
-                elif args[1] > 230:
-                    pyautogui.moveTo(None,mouseModule.size[1]-1, duration=0.2)
-                else:
-                    pyautogui.moveTo(None,calculatex(args[1]), duration=0.2)
+        def calculateStop(x,y):
+            if 60 + mouseModule.y >= y and mouseModule.y -60 <= y and 25 + mouseModule.x >= x and mouseModule.x - 25 <= x:
+                return True
+            else:
+                return False
+        if mouseModule.event:
+            if mouseModule.referenced:
+
+                try:
+                    if mouseModule.counter == 15:
+                        print("X:")
+                        print(args[3])
+                        print("Y:")
+                        print(args[1])
+                        if calculateStop(args[3],args[1]):
+                            pass
+                        else:
+                            pyautogui.moveRel(calculatex(args[3]),calculatey(args[1]), duration=0.1)
+                        mouseModule.counter = 0
+
+                    mouseModule.counter +=1
+
+                except KeyboardInterrupt:
+                    print("Stop\n")
+            else:
+                print("RefY:")
+                print(args[1])
+                print("RefX:")
+                print(args[3])
+                mouseModule.x,mouseModule.y = args[3],args[1]
+                mouseModule.referenced = 1
+        else:
+            if mouseModule.counter == 40:
+                print("RefY:" + str(args[1]))
+                print("RefX:" + str(args[3]))
                 mouseModule.counter = 0
-
-            mouseModule.counter +=1
-
-        except KeyboardInterrupt:
-            print("Stop\n")
+            mouseModule.counter+=1
 
     def configure(self, dispatcher):
         dispatcher.mapPath("/muse/acc", self.move,False,self)
