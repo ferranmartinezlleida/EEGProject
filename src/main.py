@@ -1,8 +1,6 @@
 #!/usr/bin/python
 
 from guidisplay import *
-from eegcontroler import *
-from modules import *
 
 # Def params amb MAP:
 # unused_addr: El primer parametre no s'utilitze
@@ -20,32 +18,6 @@ def print_volume_handler(unused_addr,*args):
         print(args[x])
 
 
-def calculatex(xp):
-    import math
-    x = 150
-    if xp < x - 40:
-        return 10 * math.ceil(((x - 40)-xp)/20)
-    elif xp > x + 40:
-        return -10 *math.ceil((xp-(x + 40))/20)
-    else:
-        return 3
-
 if __name__ == "__main__":
-    import pyautogui
-    # TODO: Multiprocessing per cridar al script
-    # TODO: Modul Mouse
-    # TODO: Multidioma Arxiu clau-valor
-    # TODO: Solucionar tema dels checkboxs (Seleccionar tots)
-    # TODO: Fer un disseny millor dels Checkboxs
-    # TODO: Millorar la pantalla del Dispatcher
 
-    #selectModuleMenu()
-
-    module = MouseModule()
-    dispatcher = ModularDispatcher(module)
-    controler = OSCcontroler(dispatcher)
-    controler.buildServer()
-    functionBindingtoWidget(controler,module)
-
-
-    #25 cap a munt 25 cap avall
+    selectModuleMenu()
