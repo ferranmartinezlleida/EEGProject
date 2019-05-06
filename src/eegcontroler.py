@@ -7,6 +7,7 @@ class OSCcontroler:
         self.host = host
         self.port = port
         self.dispatcher = modulardispatcher.getDispatcher()
+        self.serving = False
 
     def setPort(self,port):
         self.port = port
@@ -18,10 +19,12 @@ class OSCcontroler:
         self.server = osc_server.OSCUDPServer((self.host, self.port), self.dispatcher)
 
     def initiate_server(self):
+        self.serving = True
         self.server.serve_forever()
 
     def shutdown_server(self):
         self.server.shutdown()
+        self.serving = False
 
 
 

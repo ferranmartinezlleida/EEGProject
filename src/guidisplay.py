@@ -49,10 +49,10 @@ def factoryModuleGui(selected):
         mg.startDisplay()
 
     if selected == "ExperimentalModule":
-        mg = ModularGui(ExperimentalGui())
+        mg = ModularGui(ExperimentalGui(),"ExperimentalModule")
         createGui(mg)
     elif selected == "MouseModule":
-        mg = ModularGui(MouseGui())
+        mg = ModularGui(MouseGui(),"MouseModule")
         createGui(mg)
 
 
@@ -63,9 +63,10 @@ def selectModuleMenu():
     selected = StringVar()
     radlist = []
 
-    welcome = Label(root,text ="Benvinguts a Modular EEG System!")
+    root.geometry("+" + str(int(root.winfo_screenwidth() / 2)) + "+" + str(int(root.winfo_screenheight() / 3)))
+    welcome = Label(root,text ="Benvinguts a Modular EEG System!", font="Times 15 bold")
     welcome.grid(columnspan=2, row=0,sticky="N")
-    select = Label(root, text="Elegeix un modul:")
+    select = Label(root, text="Elegeix un modul:", font="Times 15 bold")
     select.grid(columnspan=2, row=1, sticky="N")
 
     value = 1
@@ -91,17 +92,18 @@ def selectModuleMenu():
 
 class ModularGui:
 
-    def __init__(self,moduleGUI):
+    def __init__(self,moduleGUI,title):
         self.moduleGUI = moduleGUI
         self.root = Tk()
         self.configured = 0
+        self.title = title
 
     def setModuleConfigurationTools(self):
-        self.root.title("Configuració")
+        self.root.title(self.title)
         btn = Button(self.root, text="Confirma", command=self.endConfiguration)
         btn.grid(column=0, row=0)
 
-        config = Label(self.root, text="Configuració")
+        config = Label(self.root, text="Configuració",font="Times 15 bold")
         config.grid(column=1, row=0)
         self.moduleGUI.attachConfigurationWidgets(self.root)
 
@@ -114,18 +116,23 @@ class ModularGui:
         def on_stop():
             controler.shutdown_server()
 
+        def on_closing():
+            if controler.serving:
+                controler.shutdown_server()
+            self.root.destroy()
+
         if self.configured:
             self.root = Tk()
             self.root.title("Controlador Interficie Modular")
-            dispatcher = Label(self.root, text="Interficie")
+            dispatcher = Label(self.root, text="Interficie",font="Times 15 bold")
             dispatcher.grid(columnspan=2, row=0)
             btn_start = Button(self.root, text="Inicia", command=on_start)
             btn_start.grid(column=0, row=1,sticky="E")
             btn_pause = Button(self.root, text="Pausa", bg="red", command=on_stop)
             btn_pause.grid(column=1, row=1)
-            module = Label(self.root, text="Modul")
-            module.grid(columnspan=2, row=2,sticky="W")
-
+            module = Label(self.root, text="Modul",font="Times 15 bold")
+            module.grid(columnspan=2, row=2,sticky="N")
+            self.root.protocol("WM_DELETE_WINDOW", on_closing)
             self.moduleGUI.setRuntimeModuleTools(self.root,configuredModule)
 
 
@@ -154,12 +161,14 @@ class MouseGui:
 
     def attachConfigurationWidgets(self,root):
 
+        root.geometry("+" + str(int(root.winfo_screenwidth()/2)) + "+" + str(int(root.winfo_screenheight()/3)))
+
         self.movement_deadzDef = IntVar(root,value=self.movement_deadzone)
         self.movement_signalrDef = IntVar(root,value=self.movement_signalRecon)
         self.blinking_forButtonRDef = IntVar(root,value=self.blinking_forButtonR)
         self.blinking_windowSDef = IntVar(root,value=self.blinking_windowSec)
 
-        move = Label(root, text="Moviment")
+        move = Label(root, text="Moviment",font="Times 15 bold")
         move.grid(column=0, row=1, sticky="N")
 
         move_deadzone = Label(root, text="Sensibilitat aturada")
@@ -172,7 +181,7 @@ class MouseGui:
         move_sREntry = Entry(root, width=4, textvariable=self.movement_signalrDef)
         move_sREntry.grid(column=1, row=3, sticky="W")
 
-        move_buttonR = Label(root, text="Botó dret")
+        move_buttonR = Label(root, text="Botó dret",font="Times 15 bold")
         move_buttonR.grid(column=0, row=4, sticky="N")
 
         buttonR_blink = Label(root, text="Nº parpadejos")
@@ -198,6 +207,8 @@ class MouseGui:
 
     def setRuntimeModuleTools(self,root,module):
 
+        root.geometry("+" + str(int(root.winfo_screenwidth()/2)) + "+" + str(int(root.winfo_screenheight()/3)))
+
         self.movement_deadzDef = IntVar(root,value=module.getDeadzone())
         self.movement_signalrDef = IntVar(root,value=module.getSignalRec())
         self.blinking_forButtonRDef = IntVar(root,value=module.getBlinkNumb())
@@ -208,10 +219,10 @@ class MouseGui:
         reference_restart = Button(root, text=module.userEventName, bg="red", command=module.changeEventState)
         reference_restart.grid(column=1, row=3, sticky="W")
 
-        conf = Label(root, text="Configuració")
+        conf = Label(root, text="Configuració",font="Times 15 bold")
         conf.grid(columnspan=2, row=4, sticky="N")
 
-        move = Label(root, text="Moviment")
+        move = Label(root, text="Moviment",font="Times 15 bold")
         move.grid(column=0, row=5, sticky="W")
 
         move_deadzone = Label(root, text="Sensibilitat aturada")
@@ -224,7 +235,7 @@ class MouseGui:
         move_sREntry = Entry(root, width=4, textvariable=self.movement_signalrDef)
         move_sREntry.grid(column=1, row=7, sticky="W")
 
-        move_buttonR = Label(root, text="Botó dret")
+        move_buttonR = Label(root, text="Botó dret",font="Times 15 bold")
         move_buttonR.grid(column=0, row=8, sticky="W")
 
         buttonR_blink = Label(root, text="Nº parpadejos")
@@ -292,6 +303,7 @@ class ExperimentalGui:
             self.checkboxValues.append((var,route))
             routeBoxes.append(c)
             vrow += 1
+        root.geometry("+" + str(int(root.winfo_screenwidth()/2)) + "+" + str(int(root.winfo_screenheight()/3)))
         root.resizable(False,False)
 
     def confirm(self):
@@ -308,13 +320,13 @@ class ExperimentalGui:
     def setRuntimeModuleTools(self, root, module):
 
         self.eventName = StringVar(root)
-
+        root.geometry("260x180+" + str(int(root.winfo_screenwidth()/2)) + "+" + str(int(root.winfo_screenheight()/3)))
         capture_event = Label(root, text="Captura Event")
         capture_event.grid(column=0, row=3, sticky="W")
         btn_capture = Button(root, text=module.userEventName, bg="red", command=module.changeEventState,width=8)
         btn_capture.grid(column=1, row=3, sticky="W")
 
-        conf = Label(root, text="Configuració")
+        conf = Label(root, text="Configuració",font="Times 15 bold")
         conf.grid(columnspan=2, row=4, sticky="N")
 
         eventName = Label(root, text="Nom Event")
